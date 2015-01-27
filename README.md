@@ -1,4 +1,4 @@
-Dependency Injection module for Rock Framework
+Dependency Injection Container for PHP
 =================
 
 
@@ -42,7 +42,7 @@ class Foo
 
 $config = [
     'class' => '\test\Foo', 
-    // 'singleton' => true,          // if you want to return singleton
+    // 'singleton' => true,   // if you want to return singleton
  ];
 $alias = 'foo' ;  // short alias
 Container::add($alias, $config);
@@ -164,4 +164,4 @@ Requirements
 License
 -------------------
 
-Dependency Injection module for Rock Framework is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT).
+The Rock Dependency Injection is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT).
