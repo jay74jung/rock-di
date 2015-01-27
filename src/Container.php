@@ -314,7 +314,8 @@ class Container
         if ($args = $reflect->getConstructor()->getParameters())  {
             reset($args);
             $last = end($args);
-            if ($reflect->hasMethod('init') && is_array($last->getDefaultValue())) {
+            $interfaces = array_flip($reflect->getInterfaceNames());
+            if (isset($interfaces['rock\base\ObjectInterface']) && is_array($last->getDefaultValue())) {
                 array_pop($args);
             }
         }
