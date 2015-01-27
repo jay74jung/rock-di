@@ -5,6 +5,7 @@ namespace rockunit;
 use rock\base\ObjectInterface;
 use rock\base\ObjectTrait;
 use rock\di\Container;
+use rock\di\ContainerException;
 
 /**
  * @group base
@@ -24,8 +25,14 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
     public function testAddAndGet()
     {
         $config = ['class' => Bar::className(), 'singleton' => true];
-        Container::add('bar', $config);
+        Container::addMulti(['bar' => $config]);
         $this->assertSame(Bar::className(), Container::get('bar')['class']);
+
+        // getAll
+        $this->assertNotEmpty(Container::getAll());
+
+        // count
+        $this->assertSame(1, Container::count());
     }
 
     /**
@@ -34,6 +41,10 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
     public function testExists()
     {
         $this->assertTrue(Container::exists('bar'));
+
+        // is singleton
+        $this->assertTrue(Container::isSingleton('bar'));
+        $this->assertFalse(Container::isSingleton('baz'));
     }
 
     /**
@@ -41,7 +52,7 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
      */
     public function testRemove()
     {
-        Container::remove('bar');
+        Container::removeMulti(['bar']);
         $this->assertNull(Container::get('bar'));
         $this->assertFalse(Container::exists('bar'));
     }
@@ -66,6 +77,14 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         Container::add('bar', $config);
         $this->assertTrue(Container::load('test','bar') instanceof Bar);
         $this->assertTrue(Container::load('test', ['class' => 'bar']) instanceof Bar);
+    }
+
+    /**
+     * @depends testLoad
+     */
+    public function testGet()
+    {
+        $this->assertNotEmpty(Container::get('\\' .Bar::className()));
     }
 
     public function testNewCustomArgsConstruct()
@@ -165,12 +184,31 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         $this->assertNull(Container::load('unknown', false));
     }
 
-    public function testSetterFetter()
+    public function testSetterGetter()
     {
         Container::add('test5', ['class' => SetterGetter::className(), 'name' => 'Tom', 'age' => 20]);
         $object = Container::load(['class' => SetterGetter::className(), 'age' => 25]);
         $this->assertSame('Tom', $object->name);
         $this->assertSame(25, $object->age);
+    }
+
+    public function testAddUnknownClassThrowException()
+    {
+        $this->setExpectedException(ContainerException::className());
+        $config = ['class' => 'unknown'];
+        Container::add('unknown', $config);
+    }
+
+    public function testAddWrongTypeConfigThrowException()
+    {
+        $this->setExpectedException(ContainerException::className());
+        Container::add('unknown', 7);
+    }
+
+    public function testRemoveAll()
+    {
+        Container::removeAll();
+        $this->assertEmpty(Container::getAll());
     }
 }
 
