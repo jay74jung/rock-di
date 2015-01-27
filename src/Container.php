@@ -90,7 +90,7 @@ class Container
             }
             return static::newInstance($class, $config ? [$config] : $config, $args);
         }
-        $data = static::_provide($class);
+        $data = static::getInternal($class);
         // Lazy (single instance)
         if (static::isSingleton($class)) {
             $instance = static::getSingleton($data, $config, $args);
@@ -111,7 +111,7 @@ class Container
     public static function get($name)
     {
         $name = ltrim($name, '\\');
-        if (!$data = self::_provide($name)) {
+        if (!$data = self::getInternal($name)) {
             return null;
         }
 
@@ -254,7 +254,6 @@ class Container
             return static::$instances[$data['alias']];
         }
         if ($instance = self::getInstance($data, $config, $args)) {
-            //static::_callPermanentInit($instance, $data);
             return static::$instances[$data['alias']] = $instance;
         }
 
@@ -385,7 +384,7 @@ class Container
         return [$class, $config];
     }
 
-    protected static function _provide($name)
+    protected static function getInternal($name)
     {
         if (!empty(static::$classNames[$name])) {
             return static::$classNames[$name];
