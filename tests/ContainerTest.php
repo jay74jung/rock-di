@@ -165,10 +165,10 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         $this->assertNull(Container::load('unknown', false));
     }
 
-    public function testSetProperties()
+    public function testSetterFetter()
     {
-        Container::add('test5', ['class' => Test5::className(), 'name' => 'Tom', 'age' => 20]);
-        $object = Container::load(['class' => Test5::className(), 'age' => 25]);
+        Container::add('test5', ['class' => SetterGetter::className(), 'name' => 'Tom', 'age' => 20]);
+        $object = Container::load(['class' => SetterGetter::className(), 'age' => 25]);
         $this->assertSame('Tom', $object->name);
         $this->assertSame(25, $object->age);
     }
@@ -254,7 +254,7 @@ class Test4
     }
 }
 
-class Test5 implements ObjectInterface
+class SetterGetter implements ObjectInterface
 {
     use ObjectTrait;
 
