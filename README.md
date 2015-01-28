@@ -4,6 +4,7 @@ Dependency Injection Container for PHP
 [![Latest Stable Version](https://poser.pugx.org/romeOz/rock-di/v/stable.svg)](https://packagist.org/packages/romeOz/rock-di)
 [![Total Downloads](https://poser.pugx.org/romeOz/rock-di/downloads.svg)](https://packagist.org/packages/romeOz/rock-di)
 [![Build Status](https://travis-ci.org/romeOz/rock-di.svg?branch=master)](https://travis-ci.org/romeOz/rock-di)
+[![HHVM Status](http://hhvm.h4cc.de/badge/romeoz/rock-di.svg)](http://hhvm.h4cc.de/package/romeoz/rock-di)
 [![Coverage Status](https://coveralls.io/repos/romeOz/rock-di/badge.svg?branch=master)](https://coveralls.io/r/romeOz/rock-di?branch=master)
 [![License](https://poser.pugx.org/romeOz/rock-di/license.svg)](https://packagist.org/packages/romeOz/rock-di)
 
