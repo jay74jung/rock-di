@@ -103,7 +103,7 @@ class Container
     }
 
     /**
-     * Get config of class.
+     * Returns config by name/alias.
      *
      * @param string $name name/alias of class.
      * @return null|array
@@ -119,7 +119,7 @@ class Container
     }
 
     /**
-     * Get config by classes.
+     * Returns all configs.
      *
      * @param bool  $alias by alias
      * @param array $only  list of items whose value needs to be returned.
@@ -191,7 +191,7 @@ class Container
     }
 
     /**
-     * Get count classes
+     * Returns count classes.
      */
     public static function count()
     {
@@ -199,7 +199,7 @@ class Container
     }
 
     /**
-     * Removes class and instance
+     * Removes class and instance.
      * @param string $name name/alias of class.
      */
     public static function remove($name)
@@ -208,6 +208,7 @@ class Container
     }
 
     /**
+     * Removes multi classes.
      * @param array $names names/aliases of classes.
      */
     public static function removeMulti(array $names)
