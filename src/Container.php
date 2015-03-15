@@ -155,7 +155,7 @@ class Container
                 'alias' => $alias,
                 'properties' => $config,
             ];
-        } elseif ($config instanceof \Closure) {
+        } elseif (is_callable($config)) {
             static::$classAliases[$alias] = ['class' => $config, 'alias' => $alias, 'properties' => []];
         } else {
             throw new ContainerException('Configuration must be an array or callable.');
@@ -272,12 +272,15 @@ class Container
     protected static function getInstance(array $data, array $config = [], array $args = [])
     {
         $class = $data['class'];
-        // if is callable
-        if ($data['class'] instanceof \Closure) {
-            return call_user_func(
-                $data['class'],
-                array_merge($args, $config)
-            );
+        // as callable
+        if (is_callable($class)) {
+            $instance = call_user_func($class, array_merge($args, $config));
+            if (is_object($instance)) {
+                return $instance;
+            }
+            $class = $instance['class'];
+            unset($instance['class'], $instance['singleton']);
+            $data['properties'] = $instance;
         }
         try {
             $config = array_merge($data['properties'], $config);
@@ -310,8 +313,9 @@ class Container
         if (isset(static::$args[$className])) {
             return static::$args[$className];
         }
-
-        if ($args = $reflect->getConstructor()->getParameters())  {
+        $args = [];
+        $constructor = $reflect->getConstructor();
+        if ($constructor instanceof \ReflectionMethod && ($args = $constructor->getParameters()))  {
             reset($args);
             $last = end($args);
             $interfaces = array_flip($reflect->getInterfaceNames());
@@ -319,7 +323,7 @@ class Container
                 array_pop($args);
             }
         }
-        return static::$args[$className] = $args ? : [];
+        return static::$args[$className] = $args;
     }
 
     protected static function calculateArgsOfInstance($class, array &$args = [])

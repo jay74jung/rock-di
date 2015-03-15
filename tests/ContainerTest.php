@@ -77,6 +77,17 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         Container::add('bar', $config);
         $this->assertTrue(Container::load('test','bar') instanceof Bar);
         $this->assertTrue(Container::load('test', ['class' => 'bar']) instanceof Bar);
+
+        // as Closure + array
+        $config = function($data = null){
+            $this->assertSame($data[0], 'test');
+            return [
+                'class' => Bar::className()
+            ];
+        };
+        Container::add('bar', $config);
+        $this->assertTrue(Container::load('test','bar') instanceof Bar);
+        $this->assertTrue(Container::load('test', ['class' => 'bar']) instanceof Bar);
     }
 
     /**
@@ -249,8 +260,14 @@ interface BarInterface{
 
 class Bar implements BarInterface, ObjectInterface
 {
-    use ObjectTrait;
+    use ObjectTrait {
+        ObjectTrait::__construct as parent__construct;
+    }
 
+    public function __construct($arg = null, $config = [])
+    {
+        $this->parent__construct($config);
+    }
 }
 
 class Test implements ObjectInterface
