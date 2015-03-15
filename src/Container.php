@@ -5,7 +5,6 @@ use rock\base\Alias;
 use rock\base\ClassName;
 use rock\base\ObjectInterface;
 use rock\helpers\ArrayHelper;
-use rock\helpers\ObjectHelper;
 
 class Container
 {
@@ -250,7 +249,7 @@ class Container
     {
         if (isset(static::$instances[$data['alias']])) {
             static::calculateArgsOfInstance($data['class'], $args);
-            static::setProperties(static::$instances[$data['alias']], $data, $config, $args);
+            static::setPropertiesInternal(static::$instances[$data['alias']], $data, $config, $args);
 
             return static::$instances[$data['alias']];
         }
@@ -261,11 +260,12 @@ class Container
         return null;
     }
 
-    protected static function setProperties($object, array $data, array $config = [], array $args = [])
+    protected static function setPropertiesInternal($object, array $data, array $config = [])
     {
         if ($object instanceof ObjectInterface) {
-            ObjectHelper::setProperties($object, !empty($config) ? $config : $data['properties']);
-            call_user_func_array([$object, 'init'], $args);
+            $config = !empty($config) ? $config : $data['properties'];
+            $object->setProperties($config);
+            $object->init();
         }
     }
 
