@@ -170,6 +170,22 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue(Container::load('test4') === Container::load('test4'));
     }
 
+    public function testInterfaceThrowException()
+    {
+        $this->setExpectedException(ContainerException::className());
+        Container::load(Test5::className());
+    }
+
+    /**
+     * @depends testInterfaceThrowException
+     */
+    public function testInterface()
+    {
+        Container::add('rockunit\BarInterface', ['class'=>Bar::className()]);
+        $instance = Container::load(Test5::className());
+        $this->assertInstanceOf(Bar::className(), $instance->bar);
+    }
+
     public function testThrowException()
     {
         try {
@@ -306,6 +322,19 @@ class Test4
 {
     public function __construct()
     {
+    }
+}
+
+
+class Test5 implements ObjectInterface
+{
+    use ObjectTrait;
+    public $bar;
+
+    public function __construct(BarInterface $bar, array $configs = [])
+    {
+        $this->setProperties($configs);
+        $this->bar = $bar;
     }
 }
 
