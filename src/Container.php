@@ -299,7 +299,7 @@ class Container
         $reflect = new \ReflectionClass($class);
 
         static::getReflectionArgs($reflect);
-        static::calculateArgsOfInstance($reflect->getName(), $args, $config);
+        static::calculateArgsOfInstance($reflect->getName(), $args);
         $args = array_merge($args, $config);
         return $reflect->newInstanceArgs($reflect->getConstructor() ? $args : []);
     }
