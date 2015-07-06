@@ -139,7 +139,7 @@ class Container
      * @param array|\Closure  $config
      * @throws ContainerException
      */
-    public static function add($alias, $config)
+    public static function registry($alias, $config)
     {
         if (is_array($config)) {
             $name = $config['class'];
@@ -168,10 +168,10 @@ class Container
      * ```
      * @param array $dependencies
      */
-    public static function addMulti(array $dependencies)
+    public static function registryMulti(array $dependencies)
     {
         foreach ($dependencies as $alias => $config) {
-            static::add($alias, $config);
+            static::registry($alias, $config);
         }
     }
 

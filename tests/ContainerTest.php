@@ -22,10 +22,10 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         static::setUpBeforeClass();
     }
 
-    public function testAddAndGet()
+    public function testRegistryAndGet()
     {
         $config = ['class' => Bar::className(), 'singleton' => true];
-        Container::addMulti(['bar' => $config]);
+        Container::registryMulti(['bar' => $config]);
         $this->assertSame(Bar::className(), Container::get('bar')['class']);
 
         // getAll
@@ -61,12 +61,12 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
     {
         // Singleton
         $config = ['class' => Bar::className(), 'singleton' => true];
-        Container::add('bar', $config);
+        Container::registry('bar', $config);
         $this->assertTrue(Container::load(['class' => Bar::className()]) instanceof Bar);
 
         // new instance
         $config = ['class' => Bar::className()];
-        Container::add('bar', $config);
+        Container::registry('bar', $config);
         $this->assertTrue(Container::load('bar') !== Container::load('bar'));
 
         // as Closure
@@ -74,7 +74,7 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
             $this->assertSame($data[0], 'test');
             return new Bar();
         };
-        Container::add('bar', $config);
+        Container::registry('bar', $config);
         $this->assertTrue(Container::load('test','bar') instanceof Bar);
         $this->assertTrue(Container::load('test', ['class' => 'bar']) instanceof Bar);
 
@@ -85,7 +85,7 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
                 'class' => Bar::className()
             ];
         };
-        Container::add('bar', $config);
+        Container::registry('bar', $config);
         $this->assertTrue(Container::load('test','bar') instanceof Bar);
         $this->assertTrue(Container::load('test', ['class' => 'bar']) instanceof Bar);
     }
@@ -122,19 +122,18 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($foo->bar instanceof Bar);
         $this->assertTrue($foo->baz2 instanceof Baz);
         $this->assertSame(['test'], $foo->param);
-
     }
 
     public function testIoCCustomArgsConstruct()
     {
-        Container::add('foo', ['class'=>Foo::className(), 'baz' => new Baz]);
+        Container::registry('foo', ['class'=>Foo::className(), 'baz' => new Baz]);
         $foo = Container::load(['class'=>Foo::className(), 'baz' => new Baz]);
         $this->assertTrue($foo->bar instanceof Bar);
         $this->assertTrue($foo->baz instanceof Baz);
         $this->assertTrue($foo->baz2 instanceof Baz);
         $this->assertNull($foo->param);
 
-        Container::add('foo', ['class'=>Foo::className(), 'singleton' =>true, 'baz' => new Baz]);
+        Container::registry('foo', ['class'=>Foo::className(), 'singleton' =>true, 'baz' => new Baz]);
         $foo = Container::load(new Bar, 'test', ['class'=>Foo::className(), 'baz' => new Baz]);
         $this->assertTrue($foo->bar instanceof Bar);
         $this->assertTrue($foo->baz instanceof Baz);
@@ -148,7 +147,7 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('test', $foo->param);
 
         // inline class
-        Container::add('foo', ['class'=>Foo::className(), 'singleton' =>true, 'baz' => new Baz]);
+        Container::registry('foo', ['class'=>Foo::className(), 'singleton' =>true, 'baz' => new Baz]);
         $foo = Container::load(new Bar, ['test'], new Baz, Foo::className());
         $this->assertTrue($foo->bar instanceof Bar);
         $this->assertTrue($foo->baz2 instanceof Baz);
@@ -157,16 +156,16 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
 
     public function testWithoutObjectTrait()
     {
-        Container::add('test3', ['class'=>'\rockunit\Test3']);
+        Container::registry('test3', ['class'=>'\rockunit\Test3']);
         $this->assertTrue(Container::load('test3') instanceof Test3);
         $this->assertTrue(Container::load('test3')->baz instanceof Baz);
 
-        Container::add('\rockunit\Test4', ['class'=>'\rockunit\Test4']);
+        Container::registry('\rockunit\Test4', ['class'=>'\rockunit\Test4']);
         $this->assertTrue(Container::load('\rockunit\Test4') instanceof Test4);
         $this->assertTrue(Container::load('\rockunit\Test4') !== Container::load('\rockunit\Test4'));
 
         // singleton (only by alias)
-        Container::add('test4', ['class'=>'\rockunit\Test4', 'singleton' => true]);
+        Container::registry('test4', ['class'=>'\rockunit\Test4', 'singleton' => true]);
         $this->assertTrue(Container::load('test4') === Container::load('test4'));
     }
 
@@ -181,7 +180,7 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
      */
     public function testInterface()
     {
-        Container::add('rockunit\BarInterface', ['class'=>Bar::className()]);
+        Container::registry('rockunit\BarInterface', ['class'=>Bar::className()]);
         $instance = Container::load(Test5::className());
         $this->assertInstanceOf(Bar::className(), $instance->bar);
     }
@@ -213,16 +212,16 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
 
     public function testSetterGetter()
     {
-        Container::add('test5', ['class' => SetterGetter::className(), 'name' => 'Tom', 'age' => 20]);
+        Container::registry('test5', ['class' => SetterGetter::className(), 'name' => 'Tom', 'age' => 20]);
         $object = Container::load(['class' => SetterGetter::className(), 'age' => 25]);
         $this->assertSame('Tom', $object->name);
         $this->assertSame(25, $object->age);
     }
 
-    public function testAddWrongTypeConfigThrowException()
+    public function testRegistryWrongTypeConfigThrowException()
     {
         $this->setExpectedException(ContainerException::className());
-        Container::add('unknown', 7);
+        Container::registry('unknown', 7);
     }
 
     public function testRemoveAll()
