@@ -36,7 +36,7 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @depends testAddAndGet
+     * @depends testRegistryAndGet
      */
     public function testExists()
     {
@@ -48,7 +48,7 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @depends testAddAndGet
+     * @depends testRegistryAndGet
      */
     public function testRemove()
     {
