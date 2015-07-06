@@ -142,9 +142,6 @@ class Container
     public static function add($alias, $config)
     {
         if (is_array($config)) {
-            if (!class_exists($config['class'])) {
-                throw new ContainerException(ContainerException::UNKNOWN_CLASS, ['class' => $config['class']]);
-            }
             $name = $config['class'];
             $singleton = !empty($config['singleton']);
             unset($config['class'], $config['singleton']);

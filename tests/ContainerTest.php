@@ -219,13 +219,6 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(25, $object->age);
     }
 
-    public function testAddUnknownClassThrowException()
-    {
-        $this->setExpectedException(ContainerException::className());
-        $config = ['class' => 'unknown'];
-        Container::add('unknown', $config);
-    }
-
     public function testAddWrongTypeConfigThrowException()
     {
         $this->setExpectedException(ContainerException::className());
