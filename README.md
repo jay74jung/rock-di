@@ -53,7 +53,7 @@ $config = [
     // 'singleton' => true,   // if you want to return singleton
  ];
 $alias = 'foo' ;  // short alias
-Container::registry($alias, $config);
+Container::register($alias, $config);
 
 $foo = Container::load('foo');
 ```
@@ -83,12 +83,12 @@ class Bar
 $config = [
     'class' => '\test\Foo',
  ];
-Container::registry('foo' , $config);
+Container::register('foo' , $config);
 
 $config = [
     'class' => '\test\Bar',
  ];
-Container::registry('bar' , $config);
+Container::register('bar' , $config);
 
 $bar = Container::load('bar');
 $bar->foo instanceof Bar; // output: true
@@ -117,7 +117,7 @@ $config = [
     'name' => 'Tom'
  ];
 
-Container::registry('foo', $config);
+Container::register('foo', $config);
 
 $foo = Container::load('foo');
 
@@ -158,7 +158,7 @@ $config = [
     'name' => 'Tom'
  ];
 
-Container::registry('foo', $config);
+Container::register('foo', $config);
 
 $foo = Container::load('foo');
 
