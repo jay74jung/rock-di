@@ -53,7 +53,7 @@ $config = [
     // 'singleton' => true,   // if you want to return singleton
  ];
 $alias = 'foo' ;  // short alias
-Container::add($alias, $config);
+Container::registry($alias, $config);
 
 $foo = Container::load('foo');
 ```
@@ -83,18 +83,18 @@ class Bar
 $config = [
     'class' => '\test\Foo',
  ];
-Container::add('foo' , $config);
+Container::registry('foo' , $config);
 
 $config = [
     'class' => '\test\Bar',
  ];
-Container::add('bar' , $config);
+Container::registry('bar' , $config);
 
 $bar = Container::load('bar');
 $bar->foo instanceof Bar; // output: true
 ```
 
-####Sets properties
+####Configure properties
 
 ```php
 namespace test;
@@ -117,14 +117,14 @@ $config = [
     'name' => 'Tom'
  ];
 
-Container::add('foo', $config);
+Container::registry('foo', $config);
 
 $foo = Container::load('foo');
 
 echo $foo->name; // output: Tom 
 ```
 
-Sets properties through setters and getters:
+Configure properties through setters and getters:
 
 ```php
 namespace test;
@@ -158,7 +158,7 @@ $config = [
     'name' => 'Tom'
  ];
 
-Container::add('foo', $config);
+Container::registry('foo', $config);
 
 $foo = Container::load('foo');
 
