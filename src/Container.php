@@ -118,8 +118,8 @@ class Container
     /**
      * Returns all configs.
      *
-     * @param bool  $alias by alias
-     * @param array $only  list of items whose value needs to be returned.
+     * @param bool $alias by alias
+     * @param array $only list of items whose value needs to be returned.
      * @param array $exclude list of items whose value should NOT be returned.
      * @return array the array representation of the collection.
      */
@@ -134,7 +134,7 @@ class Container
      * Registry class.
      *
      * @param string $alias alias of class.
-     * @param array|\Closure  $config
+     * @param array|\Closure $config
      * @throws ContainerException
      */
     public static function register($alias, $config)
@@ -310,7 +310,7 @@ class Container
         }
         $args = [];
         $constructor = $reflect->getConstructor();
-        if ($constructor instanceof \ReflectionMethod && ($args = $constructor->getParameters()))  {
+        if ($constructor instanceof \ReflectionMethod && ($args = $constructor->getParameters())) {
             reset($args);
             $last = end($args);
             $interfaces = array_flip($reflect->getInterfaceNames());
@@ -328,7 +328,7 @@ class Container
         }
 
         $i = -1;
-        /** @var \ReflectionParameter  $param */
+        /** @var \ReflectionParameter $param */
         foreach (static::$args[$class] as $param) {
             ++$i;
 
@@ -357,15 +357,6 @@ class Container
             }
 
         }
-    }
-
-    protected static function calculateArgs(array $args)
-    {
-        $offset = is_bool(end($args)) ? -2 : -1;
-        $config = current(array_slice($args, $offset, 1)) ? : [];
-        $args = array_slice($args, 0, count($args) + $offset);
-
-        return [$config, $args];
     }
 
     protected static function calculateConfig($config)
