@@ -85,7 +85,7 @@ class Container
                 }
                 return null;
             }
-            return static::newInstance($class, $config ? [$config] : $config, $args);
+            return static::newInstance($class, $config, $args);
         }
         $data = static::getInternal($class);
         // Lazy (single instance)
@@ -243,7 +243,6 @@ class Container
     protected static function getSingleton(array $data, array $config = [], array $args = [])
     {
         if (isset(static::$instances[$data['alias']])) {
-            static::calculateArgsOfInstance($data['class'], $args);
             static::setPropertiesInternal(static::$instances[$data['alias']], $data, $config);
 
             return static::$instances[$data['alias']];
@@ -281,7 +280,7 @@ class Container
             $config = array_merge($data['properties'], $config);
             return static::newInstance(
                 $class,
-                $config ? [$config] : $config,
+                $config,
                 $args
             );
         } catch (\Exception $e) {
@@ -293,70 +292,51 @@ class Container
     {
         $reflect = new \ReflectionClass($class);
 
-        static::getReflectionArgs($reflect);
-        static::calculateArgsOfInstance($reflect->getName(), $args);
-        $args = array_merge($args, $config);
+        //static::getReflectionArgs($reflect);
+        $args = static::calculateArgs($reflect, $args, $config);
+        //$args = array_merge($args, $config);
         return $reflect->newInstanceArgs($reflect->getConstructor() ? $args : []);
     }
 
-    protected static $args = [];
-
-    protected static function getReflectionArgs(\ReflectionClass $reflect)
+    protected static function calculateArgs(\ReflectionClass $reflect, array $args = [], array $config = [])
     {
-        // lazy loading arguments
-        $className = $reflect->getName();
-        if (isset(static::$args[$className])) {
-            return static::$args[$className];
-        }
-        $args = [];
         $constructor = $reflect->getConstructor();
-        if ($constructor instanceof \ReflectionMethod && ($args = $constructor->getParameters())) {
-            reset($args);
-            $last = end($args);
-            $interfaces = array_flip($reflect->getInterfaceNames());
-            if (isset($interfaces['rock\base\ObjectInterface']) && is_array($last->getDefaultValue())) {
-                array_pop($args);
-            }
-        }
-        return static::$args[$className] = $args;
-    }
-
-    protected static function calculateArgsOfInstance($class, array &$args = [])
-    {
-        if (empty(static::$args[$class])) {
-            return;
-        }
-
-        $i = -1;
-        /** @var \ReflectionParameter $param */
-        foreach (static::$args[$class] as $param) {
-            ++$i;
-
-            if ($param->getClass()) {
-                $hint = $param->getClass()->getName();
-                if (isset($args[$i]) && $args[$i] instanceof $hint) {
-                    continue;
-                }
-                if ($param->isDefaultValueAvailable() && $param->getDefaultValue() === null) {
-                    if (!static::exists($hint)) {
-                        if (!class_exists($hint)) {
-                            $args[$i] = null;
-                            continue;
+        if ($constructor instanceof \ReflectionMethod && ($params = $constructor->getParameters())) {
+            $i = -1;
+            foreach ($params as $param) {
+                ++$i;
+                if ($param->getClass()) {
+                    $hint = $param->getClass()->getName();
+                    if (isset($args[$i]) && $args[$i] instanceof $hint) {
+                        continue;
+                    }
+                    if ($param->isDefaultValueAvailable() && $param->getDefaultValue() === null) {
+                        if (!static::exists($hint)) {
+                            if (!class_exists($hint)) {
+                                $args[$i] = null;
+                                continue;
+                            }
                         }
                     }
+                    $args[$i] = static::load(['class' => $hint]);
+                    continue;
                 }
-                $args[$i] = static::load(['class' => $hint]);
-                continue;
+
+                if (!array_key_exists($i, $args) && $param->isDefaultValueAvailable()) {
+                    $args[$i] = $param->getDefaultValue();
+                }
             }
 
-            if (isset($args[$i])) {
-                continue;
+            $last = end($params);
+            $interfaces = array_flip($reflect->getInterfaceNames());
+            if (isset($interfaces['rock\base\ObjectInterface']) && is_array($last->getDefaultValue())) {
+                end($args);
+                $args[key($args)] = $config;
+                reset($args);
             }
-            if ($param->isDefaultValueAvailable()) {
-                $args[$i] = $param->getDefaultValue();
-            }
-
         }
+
+        return $args;
     }
 
     protected static function calculateConfig($config)
