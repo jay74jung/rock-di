@@ -75,8 +75,8 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
             return new Bar();
         };
         Container::register('bar', $config);
-        $this->assertTrue(Container::load('test','bar') instanceof Bar);
-        $this->assertTrue(Container::load('test', ['class' => 'bar']) instanceof Bar);
+        $this->assertTrue(Container::load('bar', ['test',]) instanceof Bar);
+        $this->assertTrue(Container::load(['class' => 'bar'], ['test', ]) instanceof Bar);
 
         // as Closure + array
         $config = function($data = null){
@@ -86,8 +86,8 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
             ];
         };
         Container::register('bar', $config);
-        $this->assertTrue(Container::load('test','bar') instanceof Bar);
-        $this->assertTrue(Container::load('test', ['class' => 'bar']) instanceof Bar);
+        $this->assertTrue(Container::load('bar',['test']) instanceof Bar);
+        $this->assertTrue(Container::load(['class' => 'bar'], ['test']) instanceof Bar);
     }
 
     /**
@@ -111,14 +111,14 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($foo->baz2 instanceof Baz);
         $this->assertNull($foo->param);
 
-        $foo = Container::load(new Bar, 'test', ['class'=>Foo::className(), 'baz' => new Baz]);
+        $foo = Container::load(['class'=>Foo::className(), 'baz' => new Baz], [new Bar, 'test',]);
         $this->assertTrue($foo->bar instanceof Bar);
         $this->assertTrue($foo->baz instanceof Baz);
         $this->assertTrue($foo->baz2 instanceof Baz);
         $this->assertSame('test', $foo->param);
 
         // inline class
-        $foo = Container::load(new Bar, ['test'], new Baz, Foo::className());
+        $foo = Container::load(Foo::className(), [new Bar, ['test'], new Baz, ]);
         $this->assertTrue($foo->bar instanceof Bar);
         $this->assertTrue($foo->baz2 instanceof Baz);
         $this->assertSame(['test'], $foo->param);
@@ -134,13 +134,15 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($foo->param);
 
         Container::register('foo', ['class'=>Foo::className(), 'singleton' =>true, 'baz' => new Baz]);
-        $foo = Container::load(new Bar, 'test', ['class'=>Foo::className(), 'baz' => new Baz]);
+        $config =['class'=>Foo::className(), 'baz' => new Baz];
+        $foo = Container::load($config, [new Bar, 'test', ]);
         $this->assertTrue($foo->bar instanceof Bar);
         $this->assertTrue($foo->baz instanceof Baz);
         $this->assertTrue($foo->baz2 instanceof Baz);
         $this->assertSame('test', $foo->param);
 
-        $foo = Container::load(new Bar, 'test', ['class'=>Foo::className(), 'baz' => Container::load(Baz::className())]);
+        $config = ['class'=>Foo::className(), 'baz' => Container::load(Baz::className())];
+        $foo = Container::load($config, [new Bar, 'test', ]);
         $this->assertTrue($foo->bar instanceof Bar);
         $this->assertTrue($foo->baz instanceof Baz);
         $this->assertTrue($foo->baz2 instanceof Baz);
@@ -148,7 +150,7 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
 
         // inline class
         Container::register('foo', ['class'=>Foo::className(), 'singleton' =>true, 'baz' => new Baz]);
-        $foo = Container::load(new Bar, ['test'], new Baz, Foo::className());
+        $foo = Container::load(Foo::className(), [new Bar, ['test'], new Baz, ]);
         $this->assertTrue($foo->bar instanceof Bar);
         $this->assertTrue($foo->baz2 instanceof Baz);
         $this->assertSame(['test'], $foo->param);
@@ -199,7 +201,7 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
             $this->assertNotEmpty($e->getMessage());
         }
 
-        $test = Container::load(new Bar, Test::className());
+        $test = Container::load(Test::className(), [new Bar]);
         $this->assertTrue($test->bar instanceof Bar);
 
         Container::load(Test2::className());
@@ -207,7 +209,7 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
 
     public function testThrowExceptionDisable()
     {
-        $this->assertNull(Container::load('unknown', false));
+        $this->assertNull(Container::load('unknown', [], false));
     }
 
     public function testSetterGetter()

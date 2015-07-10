@@ -49,10 +49,10 @@ class Container
      *     'username' => $username,
      *     'password' => $password,
      * ]);
-     * $object = Container::load($arg1, $arg2, [
+     * $object = Container::load([
      *     'class' => 'apps\frontend\FooController',
      *     'test' => 'test',
-     * ]);
+     * ], [$arg1, $arg2]);
      * ```
      *
      *
@@ -67,17 +67,15 @@ class Container
      * The method will pass the given configuration as the last parameter of the constructor,
      * and any additional parameters to this method will be passed as the rest of the constructor parameters.
      *
-     * @param mixed ...$args arguments for constructor.
-     * @param string|array $config         the configuration. It can be either a string representing the class name
+     * @param string|array $config the configuration. It can be either a string representing the class name
      *                                     or an array representing the object configuration.
-     * @param mixed        $throwException throws exception
+     * @param array|mixed $args arguments of constructor.
+     * @param mixed $throwException throws exception
      * @return null|object the created object
      * @throws ContainerException
      */
-    public static function load(/*$args...*/$config, $throwException = true)
+    public static function load($config, array $args = [], $throwException = true)
     {
-        $args = func_get_args();
-        list($config, $args) = static::calculateArgs($args);
         list($class, $config) = static::calculateConfig($config);
 
         if (!static::exists($class)) {
@@ -246,7 +244,7 @@ class Container
     {
         if (isset(static::$instances[$data['alias']])) {
             static::calculateArgsOfInstance($data['class'], $args);
-            static::setPropertiesInternal(static::$instances[$data['alias']], $data, $config, $args);
+            static::setPropertiesInternal(static::$instances[$data['alias']], $data, $config);
 
             return static::$instances[$data['alias']];
         }
