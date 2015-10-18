@@ -1,4 +1,4 @@
-Dependency Injection Container for PHP
+Dependency Injection library for PHP
 =================
 
 [![Latest Stable Version](https://poser.pugx.org/romeOz/rock-di/v/stable.svg)](https://packagist.org/packages/romeOz/rock-di)
@@ -8,22 +8,22 @@ Dependency Injection Container for PHP
 [![Coverage Status](https://coveralls.io/repos/romeOz/rock-di/badge.svg?branch=master)](https://coveralls.io/r/romeOz/rock-di?branch=master)
 [![License](https://poser.pugx.org/romeOz/rock-di/license.svg)](https://packagist.org/packages/romeOz/rock-di)
 
-[Rock DI on Packagist](https://packagist.org/packages/romeOz/rock-di)
-
 Features
 -------------------
 
  * Service locator
  * Constructor injection
  * Support singleton
- * Module for [Rock Framework](https://github.com/romeOz/rock)
+ * Standalone module/component for [Rock Framework](https://github.com/romeOz/rock)
 
 Installation
 -------------------
 
 From the Command Line:
 
-```composer require romeoz/rock-di:*```
+```
+composer require romeoz/rock-di
+```
 
 In your composer.json:
 
