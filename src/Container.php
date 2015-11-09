@@ -5,6 +5,7 @@ use rock\base\Alias;
 use rock\base\ClassName;
 use rock\base\ObjectInterface;
 use rock\helpers\ArrayHelper;
+use rock\helpers\Instance;
 
 class Container
 {
@@ -258,7 +259,7 @@ class Container
     {
         if ($object instanceof ObjectInterface) {
             $config = !empty($config) ? $config : $data['properties'];
-            $object->setProperties($config);
+            Instance::configure($object, $config);
             $object->init();
         }
     }
@@ -284,17 +285,14 @@ class Container
                 $args
             );
         } catch (\Exception $e) {
-            throw new ContainerException($e->getMessage(), [], $e);
+            throw new ContainerException($e->getMessage(), [], 0, $e);
         }
     }
 
     protected static function newInstance($class, array $config = [], array $args = [])
     {
         $reflect = new \ReflectionClass($class);
-
-        //static::getReflectionArgs($reflect);
         $args = static::calculateArgs($reflect, $args, $config);
-        //$args = array_merge($args, $config);
         return $reflect->newInstanceArgs($reflect->getConstructor() ? $args : []);
     }
 
