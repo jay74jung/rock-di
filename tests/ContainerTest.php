@@ -6,6 +6,7 @@ use rock\base\ObjectInterface;
 use rock\base\ObjectTrait;
 use rock\di\Container;
 use rock\di\ContainerException;
+use rock\helpers\Instance;
 
 /**
  * @group base
@@ -289,7 +290,7 @@ class Test implements ObjectInterface
 
     public function __construct(BarInterface $bar, array $configs = [])
     {
-        $this->setProperties($configs);
+        Instance::configure($this, $configs);
         $this->bar = $bar;
     }
 }
@@ -300,7 +301,7 @@ class Test2 implements ObjectInterface
 
     public function __construct(BarInterface $bar = null, array $configs = [])
     {
-        $this->setProperties($configs);
+        Instance::configure($this, $configs);
     }
 }
 
@@ -330,7 +331,7 @@ class Test5 implements ObjectInterface
 
     public function __construct(BarInterface $bar, array $configs = [])
     {
-        $this->setProperties($configs);
+        Instance::configure($this, $configs);
         $this->bar = $bar;
     }
 }
